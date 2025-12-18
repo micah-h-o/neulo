@@ -14,7 +14,7 @@ export default function Home() {
 
           <div className="flex items-center gap-6">
             <SignedIn>
-              <Link href="/today" className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
+              <Link href="/me/today" className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 Dashboard
               </Link>
             </SignedIn>
@@ -60,7 +60,7 @@ export default function Home() {
               </SignUpButton>
             </SignedOut>
             <SignedIn>
-              <Link href="/today" className="bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md flex items-center gap-2">
+              <Link href="/me/today" className="bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md flex items-center gap-2">
                 Go to Dashboard
               </Link>
             </SignedIn>
@@ -71,9 +71,13 @@ export default function Home() {
         <div className="mt-20 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s', gridAutoRows: '1fr' }}>
 
           {/* Card 1: Personality Analysis - Top Left, 5 columns */}
-          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col justify-between hover:shadow-lg transition-all duration-500 group h-full">
+          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
+            <div className="mb-6">
+              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Personality Analysis</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Discover your unique traits and patterns through advanced AI analysis of your journal entries.</p>
+            </div>
             {/* Mini preview: Big Five radar (mirrors Insights > Personality Profile styling) */}
-            <div className="rounded-2xl border p-4 mb-6 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
+            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
               <div className="flex items-baseline justify-between mb-3">
                 <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                   Psychological Model
@@ -130,16 +134,16 @@ export default function Home() {
                 </svg>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-2xl mb-2 text-[var(--foreground)]">Personality Analysis</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">Discover your unique traits and patterns through advanced AI analysis of your journal entries.</p>
-            </div>
           </div>
 
           {/* Card 2: Mood Trends - Top Middle, 4 columns */}
-          <div className="md:col-span-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 relative overflow-hidden flex flex-col justify-between hover:shadow-lg transition-all duration-500 group h-full">
+          <div className="md:col-span-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 relative overflow-hidden flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
+            <div className="mb-6">
+              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Mood Trends</h3>
+              <p className="text-sm text-[var(--muted)]">Track your emotional patterns over time.</p>
+            </div>
             {/* Mini preview: multi-emotion trend tiles (mirrors Insights emotion grid + trend charts) */}
-            <div className="rounded-2xl border p-4 mb-6 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
+            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
               <div className="flex items-baseline justify-between mb-3">
                 <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                   Moods
@@ -213,16 +217,16 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Mood Trends</h3>
-              <p className="text-sm text-[var(--muted)]">Track your emotional patterns over time.</p>
-            </div>
           </div>
 
           {/* Card 3: Weekly Reports - Top Right, 3 columns */}
-          <div className="md:col-span-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col justify-between hover:shadow-lg transition-all duration-500 group h-full">
-            {/* Mini preview: weekly report card (mirrors report page + insights “ready” styling) */}
-            <div className="rounded-2xl border p-4 mb-6 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
+          <div className="md:col-span-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
+            <div className="mb-6">
+              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Weekly Reports</h3>
+              <p className="text-sm text-[var(--muted)]">Comprehensive insights delivered weekly.</p>
+            </div>
+            {/* Mini preview: weekly report card (mirrors report page + insights "ready" styling) */}
+            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                   Weekly Report
@@ -251,16 +255,16 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Weekly Reports</h3>
-              <p className="text-sm text-[var(--muted)]">Comprehensive insights delivered weekly.</p>
-            </div>
           </div>
 
           {/* Card 4: Go Deeper with AI - Bottom Left, 7 columns */}
-          <div className="md:col-span-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col justify-between hover:shadow-lg transition-all duration-500 group h-full">
-            {/* Mini preview: journal excerpt + Reflection block (mirrors Today page “Reflection” styling) */}
-            <div className="rounded-2xl border p-4 mb-6 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
+          <div className="md:col-span-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
+            <div className="mb-6">
+              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Go Deeper with AI</h3>
+              <p className="text-sm text-[var(--muted)]">AI that asks the right questions.</p>
+            </div>
+            {/* Mini preview: journal excerpt + Reflection block (mirrors Today page "Reflection" styling) */}
+            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                   Entry
@@ -271,8 +275,8 @@ export default function Home() {
               </div>
               <div className="rounded-xl border p-4 mb-4" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.6)" }}>
                 <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)" }}>
-                  “I keep replaying the conversation in my head. I know I prepared, but I still felt tense
-                  the entire time…”
+                  "I keep replaying the conversation in my head. I know I prepared, but I still felt tense
+                  the entire time…"
                 </p>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
@@ -296,21 +300,21 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)" }}>
-                  When you say “I still felt tense the entire time,” what was your mind predicting would happen—
+                  When you say "I still felt tense the entire time," what was your mind predicting would happen—
                   and what evidence do you have for and against that prediction?
                 </p>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Go Deeper with AI</h3>
-              <p className="text-sm text-[var(--muted)]">AI that asks the right questions.</p>
-            </div>
           </div>
 
           {/* Card 5: Privacy and Security - Bottom Right, 5 columns */}
-          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col justify-between hover:shadow-lg transition-all duration-500 group h-full">
-            {/* Mini preview: privacy-first visual motif (no “settings” implication) */}
-            <div className="rounded-2xl border p-4 mb-6 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
+          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
+            <div className="mb-6">
+              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Privacy and Security</h3>
+              <p className="text-sm text-[var(--muted)]">Your thoughts are encrypted and yours alone.</p>
+            </div>
+            {/* Mini preview: privacy-first visual motif (no "settings" implication) */}
+            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                   Privacy
@@ -359,12 +363,61 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Privacy and Security</h3>
-              <p className="text-sm text-[var(--muted)]">Your thoughts are encrypted and yours alone.</p>
-            </div>
           </div>
 
+        </div>
+
+        {/* CTA Card */}
+        <div className="mt-20 w-full max-w-6xl mx-auto pb-20 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 hover:shadow-lg transition-all duration-500">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              {/* Left: Pricing & Features */}
+              <div className="flex-1 space-y-6">
+                <div>
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="font-serif text-3xl md:text-4xl text-[var(--foreground)]">$9</span>
+                    <span className="text-sm text-[var(--muted)]">per month</span>
+                  </div>
+                  <p className="text-sm text-[var(--muted)] leading-relaxed max-w-md">
+                    Start your journey toward better mental health and self-awareness.
+                  </p>
+                </div>
+                
+                {/* Features List */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    "AI-powered personality analysis",
+                    "Emotional pattern tracking",
+                    "Weekly insight reports",
+                    "Private, encrypted storage",
+                    "Reflective AI conversations",
+                    "Unlimited journal entries"
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2.5">
+                      <div className="w-1 h-1 rounded-full bg-[var(--accent)] flex-shrink-0" />
+                      <span className="text-sm text-[var(--foreground)]">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: CTA Button */}
+              <div className="flex-shrink-0 md:self-center">
+                <SignedOut>
+                  <SignUpButton mode="modal">
+                    <button className="w-full md:w-auto bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md">
+                      Get Started
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link href="/me/today" className="block w-full md:w-auto text-center bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md">
+                    Go to Dashboard
+                  </Link>
+                </SignedIn>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 

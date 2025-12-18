@@ -976,7 +976,7 @@ export default function Today() {
               </button>
 
               <Link
-                href="/insights"
+                href="/me/insights"
                 className="flex items-center justify-between p-5 rounded-xl border transition-all"
                 style={{
                   background: 'var(--card-bg)',

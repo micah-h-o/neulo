@@ -127,7 +127,7 @@ export default function WeeklyReportPage() {
             <div className="min-h-screen py-10" style={{ background: 'var(--background)' }}>
                 <div className="w-full px-6 md:px-16 lg:px-32 max-w-5xl mx-auto">
                     <Link
-                        href="/insights"
+                        href="/me/insights"
                         className="inline-flex items-center gap-2 text-sm mb-8"
                         style={{ color: 'var(--muted)' }}
                     >
@@ -157,7 +157,7 @@ export default function WeeklyReportPage() {
             <div className="w-full px-6 md:px-16 lg:px-32 max-w-5xl mx-auto">
                 {/* Back link */}
                 <Link
-                    href="/insights"
+                    href="/me/insights"
                     className="inline-flex items-center gap-2 text-sm mb-8 transition-colors animate-fade-in-up"
                     style={{ color: 'var(--muted)' }}
                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--foreground)'}
@@ -536,7 +536,7 @@ export default function WeeklyReportPage() {
                         }) : 'recently'}
                     </p>
                     <Link
-                        href="/today"
+                        href="/me/today"
                         className="inline-flex items-center gap-2 text-sm px-6 py-2.5 rounded-full transition-all"
                         style={{
                             background: 'var(--foreground)',

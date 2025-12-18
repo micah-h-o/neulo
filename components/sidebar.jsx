@@ -7,17 +7,17 @@ const pages = [
   {
     name: "Today",
     description: "Daily reflection",
-    path: "/today",
+    path: "/me/today",
   },
   {
     name: "Journal",
     description: "Entry archive",
-    path: "/journal",
+    path: "/me/journal",
   },
   {
     name: "Insights",
     description: "Pattern analysis",
-    path: "/insights",
+    path: "/me/insights",
   },
 ];
 
@@ -26,9 +26,9 @@ export default function Sidebar() {
 
   const selectedPath =
     pathname === "/"
-      ? "/today"
+      ? "/me/today"
       : pathname.split("/")[1]
-        ? "/" + pathname.split("/")[1]
+        ? "/" + pathname.split("/")[1] + (pathname.split("/")[2] ? "/" + pathname.split("/")[2] : "")
         : pathname;
 
   return (
@@ -42,7 +42,7 @@ export default function Sidebar() {
       >
         {/* Brand */}
         <div className="px-6 mb-8">
-          <Link href="/today" className="flex items-center gap-2">
+          <Link href="/me/today" className="flex items-center gap-2">
             <span
               className="text-lg tracking-tight"
               style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}

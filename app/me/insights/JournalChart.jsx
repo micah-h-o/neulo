@@ -797,7 +797,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                                     {/* Report content section */}
                                     <div className="mt-4 pt-4 border-t" style={{ borderColor: "var(--border)" }}>
                                         <Link
-                                            href={`/insights/report/${activeReport.week_start}`}
+                                            href={`/me/insights/report/${activeReport.week_start}`}
                                             className="flex items-center justify-between w-full rounded-lg border p-3 transition-all"
                                             style={{
                                                 borderColor: "var(--border)",
@@ -897,7 +897,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                                         return (
                                             <Link
                                                 key={report.id}
-                                                href={`/insights/report/${report.week_start}`}
+                                                href={`/me/insights/report/${report.week_start}`}
                                                 className="block overflow-hidden rounded-lg border transition-all"
                                                 style={{
                                                     borderColor: "var(--border)",
