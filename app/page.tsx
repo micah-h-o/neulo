@@ -68,25 +68,22 @@ export default function Home() {
         </div>
 
         {/* Bento Grid */}
-        <div className="mt-20 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s', gridAutoRows: '1fr' }}>
+        <div className="mt-20 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s', gridAutoRows: 'minmax(0, 1fr)', alignItems: 'stretch' }}>
 
           {/* Card 1: Personality Analysis - Top Left, 5 columns */}
-          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
-            <div className="mb-6">
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Personality Analysis</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">Discover your unique traits and patterns through advanced AI analysis of your journal entries.</p>
-            </div>
+          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-500 group animate-slide-in-up" style={{ borderWidth: '1px', minHeight: '100%', animationDelay: '0.1s' }}>
             {/* Mini preview: Big Five radar (mirrors Insights > Personality Profile styling) */}
-            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
-              <div className="flex items-baseline justify-between mb-3">
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Psychological Model
-                </span>
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Big Five
-                </span>
-              </div>
-              <div className="w-full aspect-[16/9]">
+            <div className="flex-1 min-h-0 mb-6">
+              <div className="rounded-2xl border p-4 overflow-hidden h-full flex flex-col" style={{ background: "var(--card-bg)", borderColor: "var(--border)", borderWidth: "1px", boxShadow: "var(--shadow)" }}>
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Psychological Model
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Big Five
+                  </span>
+                </div>
+                <div className="w-full aspect-[16/9] flex-1">
                 <svg viewBox="0 0 360 210" className="w-full h-full">
                   <defs>
                     <radialGradient id="lp-radar-fill" cx="50%" cy="50%" r="65%">
@@ -132,27 +129,30 @@ export default function Home() {
                     <text x="56" y="88" textAnchor="end">Conscient.</text>
                   </g>
                 </svg>
+                </div>
               </div>
+            </div>
+            {/* Text at bottom left */}
+            <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
+              <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Personality Analysis</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Discover your unique traits and patterns through advanced AI analysis of your journal entries.</p>
             </div>
           </div>
 
           {/* Card 2: Mood Trends - Top Middle, 4 columns */}
-          <div className="md:col-span-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 relative overflow-hidden flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
-            <div className="mb-6">
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Mood Trends</h3>
-              <p className="text-sm text-[var(--muted)]">Track your emotional patterns over time.</p>
-            </div>
+          <div className="md:col-span-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 relative overflow-hidden flex flex-col hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-500 group animate-slide-in-up" style={{ borderWidth: '1px', minHeight: '100%', animationDelay: '0.2s' }}>
             {/* Mini preview: multi-emotion trend tiles (mirrors Insights emotion grid + trend charts) */}
-            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
-              <div className="flex items-baseline justify-between mb-3">
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Moods
-                </span>
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  14 days
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="flex-1 min-h-0 mb-6">
+              <div className="rounded-2xl border p-4 overflow-hidden h-full flex flex-col" style={{ background: "var(--card-bg)", borderColor: "var(--border)", borderWidth: "1px", boxShadow: "var(--shadow)" }}>
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Moods
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    14 days
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 flex-1">
                 {[
                   { key: "happiness", color: "#F9C846" },
                   { key: "stress", color: "#EF4444" },
@@ -164,6 +164,7 @@ export default function Home() {
                     className="rounded-xl border overflow-hidden"
                     style={{
                       borderColor: "var(--border)",
+                      borderWidth: "1px",
                       background: "rgba(255,255,255,0.6)",
                     }}
                   >
@@ -215,65 +216,115 @@ export default function Home() {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
+            </div>
+            {/* Text at bottom left */}
+            <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
+              <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Mood Trends</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Track your emotional patterns over time.</p>
             </div>
           </div>
 
           {/* Card 3: Weekly Reports - Top Right, 3 columns */}
-          <div className="md:col-span-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
-            <div className="mb-6">
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Weekly Reports</h3>
-              <p className="text-sm text-[var(--muted)]">Comprehensive insights delivered weekly.</p>
-            </div>
+          <div className="md:col-span-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-500 group animate-slide-in-up" style={{ borderWidth: '1px', minHeight: '100%', animationDelay: '0.3s' }}>
             {/* Mini preview: weekly report card (mirrors report page + insights "ready" styling) */}
-            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Weekly Report
-                </span>
-                <span className="text-[10px] font-medium" style={{ color: "var(--foreground)", fontFamily: "var(--font-sans)" }}>
-                  Ready
-                </span>
+            <div className="flex-1 min-h-0 mb-6">
+              <div className="rounded-2xl border p-4 overflow-hidden h-full flex flex-col" style={{ background: "var(--card-bg)", borderColor: "var(--border)", borderWidth: "1px", boxShadow: "var(--shadow)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Weekly Report
+                  </span>
+                  <div className="flex items-center gap-2 text-[10px]" style={{ color: "#22C55E", fontFamily: "var(--font-mono)" }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#22C55E" }} />
+                    Ready
+                  </div>
+                </div>
+
+                {/* Compact mood + themes */}
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Emotions */}
+                  <div className="space-y-2">
+                    <span className="text-[9px] uppercase tracking-[0.15em] block" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                      Emotional mix
+                    </span>
+                    <div className="space-y-1.5">
+                      {[
+                        { emotion: "calm", value: 0.68, color: "#14B8A6" },
+                        { emotion: "happiness", value: 0.52, color: "#F9C846" },
+                        { emotion: "stress", value: 0.28, color: "#EF4444" },
+                      ].map((item) => (
+                        <div key={item.emotion} className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                          <span className="text-[10px] capitalize flex-shrink-0" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)", width: "60px" }}>
+                            {item.emotion}
+                          </span>
+                          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(229,231,235,0.6)" }}>
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${item.value * 100}%`,
+                                background: item.color
+                              }}
+                            />
+                          </div>
+                          <span className="text-[9px] text-right flex-shrink-0" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)", width: "28px" }}>
+                            {Math.round(item.value * 100)}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Themes / insights */}
+                  <div className="space-y-2">
+                    <span className="text-[9px] uppercase tracking-[0.15em] block" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                      Themes
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Work-life balance",
+                        "Self-reflection",
+                        "Energy pacing",
+                      ].map((theme, index) => (
+                        <span
+                          key={index}
+                          className="text-[10px] px-3 py-1 rounded-full border"
+                          style={{
+                            borderColor: "var(--border)",
+                            background: "rgba(255,255,255,0.7)",
+                            color: "var(--foreground)"
+                          }}
+                        >
+                          {theme}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="rounded-xl border p-3" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.6)" }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                    Dominant
-                  </span>
-                  <span className="ml-auto text-xs" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                    68%
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#14B8A6" }} />
-                  <span className="text-sm capitalize" style={{ fontFamily: "var(--font-serif)", color: "var(--foreground)" }}>
-                    calm
-                  </span>
-                </div>
-                <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ background: "rgba(229,231,235,0.8)" }}>
-                  <div className="h-full rounded-full" style={{ width: "68%", background: "linear-gradient(90deg, #c7d2fe 0%, #6366f1 100%)" }} />
-                </div>
-              </div>
+            </div>
+            {/* Text at bottom left */}
+            <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
+              <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Weekly Reports</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Comprehensive insights delivered weekly.</p>
             </div>
           </div>
 
           {/* Card 4: Go Deeper with AI - Bottom Left, 7 columns */}
-          <div className="md:col-span-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
-            <div className="mb-6">
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Go Deeper with AI</h3>
-              <p className="text-sm text-[var(--muted)]">AI that asks the right questions.</p>
-            </div>
+          <div className="md:col-span-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-500 group animate-slide-in-up" style={{ borderWidth: '1px', minHeight: '100%', animationDelay: '0.4s' }}>
             {/* Mini preview: journal excerpt + Reflection block (mirrors Today page "Reflection" styling) */}
-            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Entry
-                </span>
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Today
-                </span>
-              </div>
-              <div className="rounded-xl border p-4 mb-4" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.6)" }}>
+            <div className="flex-1 min-h-0 mb-6">
+              <div className="rounded-2xl border p-4 overflow-hidden h-full flex flex-col" style={{ background: "var(--card-bg)", borderColor: "var(--border)", borderWidth: "1px", boxShadow: "var(--shadow)" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Entry
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Today
+                  </span>
+                </div>
+                <div className="rounded-xl border p-4 mb-4" style={{ borderColor: "var(--border)", borderWidth: "1px", background: "rgba(255,255,255,0.6)" }}>
                 <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)" }}>
                   "I keep replaying the conversation in my head. I know I prepared, but I still felt tense
                   the entire time…"
@@ -304,26 +355,29 @@ export default function Home() {
                   and what evidence do you have for and against that prediction?
                 </p>
               </div>
+              </div>
+            </div>
+            {/* Text at bottom left */}
+            <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
+              <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Go Deeper with AI</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">AI that asks the right questions.</p>
             </div>
           </div>
 
           {/* Card 5: Privacy and Security - Bottom Right, 5 columns */}
-          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 flex flex-col hover:shadow-lg transition-all duration-500 group h-full">
-            <div className="mb-6">
-              <h3 className="font-serif text-xl mb-1 text-[var(--foreground)]">Privacy and Security</h3>
-              <p className="text-sm text-[var(--muted)]">Your thoughts are encrypted and yours alone.</p>
-            </div>
+          <div className="md:col-span-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 flex flex-col hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-500 group animate-slide-in-up" style={{ borderWidth: '1px', minHeight: '100%', animationDelay: '0.5s' }}>
             {/* Mini preview: privacy-first visual motif (no "settings" implication) */}
-            <div className="rounded-2xl border p-4 overflow-hidden" style={{ background: "var(--card-bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                  Privacy
-                </span>
-                <span className="text-[10px] font-medium" style={{ color: "var(--foreground)" }}>
-                  Protected
-                </span>
-              </div>
-              <div className="rounded-xl border p-4 relative overflow-hidden" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.6)" }}>
+            <div className="flex-1 min-h-0 mb-6">
+              <div className="rounded-2xl border p-4 overflow-hidden h-full flex flex-col" style={{ background: "var(--card-bg)", borderColor: "var(--border)", borderWidth: "1px", boxShadow: "var(--shadow)" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                    Privacy
+                  </span>
+                  <span className="text-[10px] font-medium" style={{ color: "var(--foreground)" }}>
+                    Protected
+                  </span>
+                </div>
+                <div className="rounded-xl border p-4 relative overflow-hidden flex-1" style={{ borderColor: "var(--border)", borderWidth: "1px", background: "rgba(255,255,255,0.6)" }}>
                 <div
                   className="absolute -top-10 -right-10 w-40 h-40 rounded-full"
                   style={{ background: "radial-gradient(circle at 30% 30%, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0.00) 70%)" }}
@@ -349,7 +403,7 @@ export default function Home() {
                         { k: "Sensitive by default", v: "always" },
                         { k: "Secure handling", v: "end‑to‑end" },
                       ].map((b) => (
-                        <div key={b.k} className="rounded-lg border px-3 py-2" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.55)" }}>
+                        <div key={b.k} className="rounded-lg border px-3 py-2" style={{ borderColor: "var(--border)", borderWidth: "1px", background: "rgba(255,255,255,0.55)" }}>
                           <div className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
                             {b.k}
                           </div>
@@ -362,6 +416,12 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+              </div>
+            </div>
+            {/* Text at bottom left */}
+            <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
+              <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Privacy and Security</h3>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Your thoughts are encrypted and yours alone.</p>
             </div>
           </div>
 
