@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import {
@@ -134,6 +134,58 @@ function getNextSunday() {
     return nextSunday;
 }
 
+// Get all Sundays in a given month (YYYY-MM format)
+// Returns dates in UTC at end of day (23:59:59.999)
+function getSundaysInMonth(yearMonth) {
+    const [year, month] = yearMonth.split('-').map(Number);
+    const sundays = [];
+    
+    // Start from the first day of the month in UTC
+    // Use UTC methods to avoid timezone issues
+    const firstDay = new Date(Date.UTC(year, month - 1, 1));
+    
+    // Find the first Sunday of the month (or before if month starts after Sunday)
+    let currentDate = new Date(firstDay);
+    const dayOfWeek = currentDate.getUTCDay();
+    
+    // If the first day is not Sunday, find the first Sunday
+    if (dayOfWeek !== 0) {
+        const daysUntilSunday = 7 - dayOfWeek;
+        currentDate.setUTCDate(1 + daysUntilSunday);
+    }
+    
+    // Collect all Sundays in the month
+    while (currentDate.getUTCMonth() === month - 1) {
+        const sunday = new Date(Date.UTC(
+            currentDate.getUTCFullYear(),
+            currentDate.getUTCMonth(),
+            currentDate.getUTCDate(),
+            23, 59, 59, 999
+        ));
+        sundays.push(sunday);
+        currentDate.setUTCDate(currentDate.getUTCDate() + 7);
+    }
+    
+    return sundays;
+}
+
+// Generate month options for dropdown (last 12 months)
+function generateMonthOptions() {
+    const options = [];
+    const now = new Date();
+    
+    for (let i = 0; i < 12; i++) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const value = `${year}-${String(month).padStart(2, '0')}`;
+        const label = date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+        options.push({ value, label });
+    }
+    
+    return options;
+}
+
 // Generate a report for a given week
 function generateReportForWeek(weekStart, weekEnd, weekEntries, reportId) {
     if (weekEntries.length === 0) return null;
@@ -234,6 +286,12 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
     const [isVisible, setIsVisible] = useState(false);
     const [previousReports, setPreviousReports] = useState([]);
     const [isLoadingReports, setIsLoadingReports] = useState(true);
+    const [selectedMonth, setSelectedMonth] = useState(() => {
+        // Default to current month in YYYY-MM format
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    });
+    const [isDropdownHovered, setIsDropdownHovered] = useState(false);
     const { session } = useSession();
     const weeklyReports = generateWeeklyReports(entries);
     const big5Data = calculatePersonalityScores(allEntries);
@@ -262,8 +320,8 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                 const { data: reports, error } = await client
                     .from('weekly_reports')
                     .select('*')
-                    .order('week_start', { ascending: false })
-                    .limit(10); // Limit to most recent 10 reports
+                    .order('week_start', { ascending: false });
+                    // Removed limit to allow filtering by any month
 
                 console.log("Previous Reports:", reports);
 
@@ -346,6 +404,115 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
             isMounted = false;
         };
     }, [session]);
+
+    // Filter reports based on selected month
+    const filteredReports = useMemo(() => {
+        if (!selectedMonth || previousReports.length === 0) return [];
+        
+        // Console log all reports in single line
+        const allReportsData = previousReports.map((report, index) => {
+            const weekStart = new Date(report.week_start);
+            const weekEnd = new Date(report.week_end);
+            const createdAt = report.created_at ? new Date(report.created_at) : null;
+            return {
+                report_num: index + 1,
+                id: report.id,
+                created_at_UTC: createdAt ? createdAt.toISOString() : null,
+                created_at_UTC_date: createdAt ? `${createdAt.getUTCFullYear()}-${String(createdAt.getUTCMonth() + 1).padStart(2, '0')}-${String(createdAt.getUTCDate()).padStart(2, '0')}` : null,
+                week_start_UTC: weekStart.toISOString(),
+                week_end_UTC: weekEnd.toISOString(),
+                week_start_UTC_date: `${weekStart.getUTCFullYear()}-${String(weekStart.getUTCMonth() + 1).padStart(2, '0')}-${String(weekStart.getUTCDate()).padStart(2, '0')}`,
+                week_end_UTC_date: `${weekEnd.getUTCFullYear()}-${String(weekEnd.getUTCMonth() + 1).padStart(2, '0')}-${String(weekEnd.getUTCDate()).padStart(2, '0')}`,
+                week_start_local: weekStart.toLocaleDateString(),
+                week_end_local: weekEnd.toLocaleDateString(),
+                week_end_day: weekEnd.toLocaleDateString(undefined, { weekday: 'long' })
+            };
+        });
+        console.log('=== All Reports ===', JSON.stringify({ total: previousReports.length, reports: allReportsData }, null, 0));
+        
+        const sundaysInMonth = getSundaysInMonth(selectedMonth);
+        const filtered = [];
+        
+        // For each Sunday in the selected month, check if a report exists where created_at falls on that Sunday
+        // Account for all timezones: UTC-12 to UTC+14 means a Sunday can appear as Saturday, Sunday, or Monday in UTC
+        const sundayChecks = sundaysInMonth.map((sunday, index) => {
+            // Sunday is already in UTC from getSundaysInMonth
+            const dayName = sunday.toLocaleDateString(undefined, { weekday: 'long' });
+            const dateString = sunday.toLocaleDateString();
+            
+            // Create a 3-day UTC window to account for all timezones
+            // Sunday 00:00:00 in UTC+14 = Saturday 10:00:00 UTC
+            // Sunday 23:59:59 in UTC-12 = Monday 11:59:59 UTC
+            // To be safe, check from Saturday 00:00:00 UTC to Monday 23:59:59 UTC
+            const sundayUTC = new Date(sunday);
+            const windowStart = new Date(Date.UTC(
+                sundayUTC.getUTCFullYear(),
+                sundayUTC.getUTCMonth(),
+                sundayUTC.getUTCDate() - 1, // Saturday
+                0, 0, 0, 0
+            ));
+            const windowEnd = new Date(Date.UTC(
+                sundayUTC.getUTCFullYear(),
+                sundayUTC.getUTCMonth(),
+                sundayUTC.getUTCDate() + 1, // Monday
+                23, 59, 59, 999
+            ));
+            
+            // Find reports where created_at falls within the timezone-aware window
+            const matchingReport = previousReports.find(report => {
+                if (!report.created_at) return false;
+                
+                const reportCreatedAt = new Date(report.created_at);
+                
+                // Check if created_at falls within our 3-day window
+                return reportCreatedAt >= windowStart && reportCreatedAt <= windowEnd;
+            });
+            
+            const result = {
+                sunday_num: index + 1,
+                day: dayName,
+                date_local: dateString,
+                date_UTC: sunday.toISOString(),
+                UTC_year: sunday.getUTCFullYear(),
+                UTC_month: sunday.getUTCMonth() + 1,
+                UTC_date: sunday.getUTCDate(),
+                search_window_start_UTC: windowStart.toISOString(),
+                search_window_end_UTC: windowEnd.toISOString()
+            };
+            
+            if (matchingReport) {
+                const reportCreatedAt = new Date(matchingReport.created_at);
+                result.status = 'report_found';
+                result.report_id = matchingReport.id;
+                result.report_created_at_UTC = reportCreatedAt.toISOString();
+                result.report_created_at_UTC_date = `${reportCreatedAt.getUTCFullYear()}-${String(reportCreatedAt.getUTCMonth() + 1).padStart(2, '0')}-${String(reportCreatedAt.getUTCDate()).padStart(2, '0')}`;
+                result.report_UTC_year = reportCreatedAt.getUTCFullYear();
+                result.report_UTC_month = reportCreatedAt.getUTCMonth() + 1;
+                result.report_UTC_date = reportCreatedAt.getUTCDate();
+                result.report_week_start = new Date(matchingReport.week_start).toLocaleDateString();
+                result.report_week_end = new Date(matchingReport.week_end).toLocaleDateString();
+                
+                // Only add if not already in the filtered array
+                if (!filtered.find(r => r.id === matchingReport.id)) {
+                    filtered.push(matchingReport);
+                }
+            } else {
+                result.status = 'no_report_found';
+            }
+            
+            return result;
+        });
+        
+        console.log('=== Checking Sundays in Month ===', JSON.stringify({ selected_month: selectedMonth, sundays_count: sundaysInMonth.length, checks: sundayChecks }, null, 0));
+        console.log('=== Filtered Results ===', JSON.stringify({ total_filtered: filtered.length }, null, 0));
+        
+        // Sort by week_start descending (most recent first)
+        return filtered.sort((a, b) => {
+            const dateA = new Date(a.week_start);
+            const dateB = new Date(b.week_start);
+            return dateB - dateA;
+        });
+    }, [previousReports, selectedMonth]);
 
     // Determine the active report object (prioritize fetched state over prop)
     const activeReport = report || weeklyReport;
@@ -865,18 +1032,60 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
 
                         {/* Previous Reports Panel */}
                         <div className="rounded-lg border p-4" style={{ borderColor: "var(--border)" }}>
-                            <h4 className="text-sm font-semibold mb-3 sticky top-0" style={{ color: "var(--foreground)", fontFamily: "var(--font-sans)", background: "var(--card-bg)" }}>Previous Reports</h4>
+                            <div className="flex items-center justify-between mb-3 sticky top-0" style={{ background: "var(--card-bg)" }}>
+                                <h4 className="text-sm font-semibold" style={{ color: "var(--foreground)", fontFamily: "var(--font-sans)" }}>Previous reports</h4>
+                                <div 
+                                    className="relative inline-block"
+                                    onMouseEnter={() => setIsDropdownHovered(true)}
+                                    onMouseLeave={() => setIsDropdownHovered(false)}
+                                >
+                                    <select
+                                        value={selectedMonth}
+                                        onChange={(e) => setSelectedMonth(e.target.value)}
+                                        className="text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 pr-8 rounded-full border appearance-none cursor-pointer transition-all"
+                                        style={{
+                                            color: isDropdownHovered ? "var(--foreground)" : "var(--muted)",
+                                            background: "var(--card-bg)",
+                                            borderColor: isDropdownHovered ? "var(--foreground)" : "var(--border)",
+                                            fontFamily: "var(--font-mono)",
+                                            outline: "none",
+                                            fontWeight: 500,
+                                            letterSpacing: "0.1em"
+                                        }}
+                                        onFocus={(e) => {
+                                            setIsDropdownHovered(true);
+                                        }}
+                                        onBlur={(e) => {
+                                            setIsDropdownHovered(false);
+                                        }}
+                                    >
+                                        {generateMonthOptions().map(option => (
+                                            <option key={option.value} value={option.value} style={{ background: "var(--card-bg)", color: "var(--foreground)" }}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div 
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
+                                        style={{ color: isDropdownHovered ? "var(--foreground)" : "var(--muted)" }}
+                                    >
+                                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                                 {isLoadingReports ? (
                                     <p className="text-sm" style={{ color: "var(--muted)", fontFamily: "var(--font-sans)" }}>
                                         Loading reports...
                                     </p>
-                                ) : previousReports.length === 0 ? (
+                                ) : filteredReports.length === 0 ? (
                                     <p className="text-sm" style={{ color: "var(--muted)", fontFamily: "var(--font-sans)" }}>
-                                        No previous reports available yet.
+                                        No reports available for this month.
                                     </p>
                                 ) : (
-                                    previousReports.map((report) => {
+                                    filteredReports.map((report) => {
                                         const weekStart = new Date(report.week_start);
                                         const weekEnd = new Date(report.week_end);
                                         const weekLabel = weekStart.toLocaleDateString(undefined, {

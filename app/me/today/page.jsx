@@ -3,6 +3,14 @@ import { useRef, useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useSession, useUser } from '@clerk/nextjs';
 import { createClient } from '@supabase/supabase-js';
+import {
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer
+} from 'recharts';
 
 // Emotion colors matching the app
 const EMOTION_COLORS = {
@@ -46,6 +54,8 @@ export default function Today() {
   const [goingDeeper, setGoingDeeper] = useState(false);
   const [deeperResponse, setDeeperResponse] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [allEntries, setAllEntries] = useState([]);
+  const [loadingEntries, setLoadingEntries] = useState(true);
 
   // Edit mode states
   const [isEditing, setIsEditing] = useState(false);
@@ -73,6 +83,106 @@ export default function Today() {
   }
 
   const client = useMemo(() => createClerkSupabaseClient(), [session?.id]);
+
+  // Fetch all entries for personality calculation
+  useEffect(() => {
+    if (!session) return;
+    let isMounted = true;
+
+    async function fetchAllEntries() {
+      setLoadingEntries(true);
+      try {
+        const { data, error } = await client
+          .from('entries')
+          .select('id, personality_scores')
+          .not('personality_scores', 'is', null)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching entries:', error);
+          if (isMounted) {
+            setAllEntries([]);
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setAllEntries(data || []);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching entries:', err);
+        if (isMounted) {
+          setAllEntries([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingEntries(false);
+        }
+      }
+    }
+
+    fetchAllEntries();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session, client]);
+
+  // Calculate personality scores
+  function calculatePersonalityScores(entries) {
+    if (!entries || entries.length === 0) {
+      return [
+        { subject: 'Openness', A: 50, fullMark: 100 },
+        { subject: 'Conscientiousness', A: 50, fullMark: 100 },
+        { subject: 'Extraversion', A: 50, fullMark: 100 },
+        { subject: 'Agreeableness', A: 50, fullMark: 100 },
+        { subject: 'Neuroticism', A: 50, fullMark: 100 },
+      ];
+    }
+
+    const entriesWithPersonality = entries.filter(entry => entry.personality_scores);
+
+    if (entriesWithPersonality.length === 0) {
+      return [
+        { subject: 'Openness', A: 50, fullMark: 100 },
+        { subject: 'Conscientiousness', A: 50, fullMark: 100 },
+        { subject: 'Extraversion', A: 50, fullMark: 100 },
+        { subject: 'Agreeableness', A: 50, fullMark: 100 },
+        { subject: 'Neuroticism', A: 50, fullMark: 100 },
+      ];
+    }
+
+    const sums = {
+      openness: 0,
+      conscientiousness: 0,
+      extraversion: 0,
+      agreeableness: 0,
+      neuroticism: 0,
+    };
+
+    entriesWithPersonality.forEach(entry => {
+      const scores = entry.personality_scores;
+      if (scores) {
+        sums.openness += scores.openness || 0;
+        sums.conscientiousness += scores.conscientiousness || 0;
+        sums.extraversion += scores.extraversion || 0;
+        sums.agreeableness += scores.agreeableness || 0;
+        sums.neuroticism += scores.neuroticism || 0;
+      }
+    });
+
+    const count = entriesWithPersonality.length;
+
+    return [
+      { subject: 'Openness', A: Math.round((sums.openness / count)), fullMark: 100 },
+      { subject: 'Conscientiousness', A: Math.round((sums.conscientiousness / count)), fullMark: 100 },
+      { subject: 'Extraversion', A: Math.round((sums.extraversion / count)), fullMark: 100 },
+      { subject: 'Agreeableness', A: Math.round((sums.agreeableness / count)), fullMark: 100 },
+      { subject: 'Neuroticism', A: Math.round((sums.neuroticism / count)), fullMark: 100 },
+    ];
+  }
+
+  const personalityData = useMemo(() => calculatePersonalityScores(allEntries), [allEntries]);
 
   // Entrance fade
   useEffect(() => {
@@ -579,7 +689,7 @@ export default function Today() {
 
   return (
     <div className={`min-h-screen py-10 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ background: 'var(--background)' }}>
-      <div className={`${contentMarginX} max-w-4xl`}>
+      <div className={`${contentMarginX} max-w-[1400px]`}>
         {checkingDailyEntry ? (
           <div className="space-y-6 animate-fade-in-up">
             <div className="h-3 w-32 rounded bg-gray-200/50" />
@@ -614,6 +724,9 @@ export default function Today() {
               </p>
             </div>
 
+            <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+              {/* Left Column: Entry Content, Mood Summary, Actions */}
+              <div className="lg:flex-1 space-y-6">
             {/* Entry Content / Edit Mode */}
             <div
               className="rounded-xl border p-6 mb-6 animate-fade-in-up"
@@ -851,7 +964,7 @@ export default function Today() {
             {/* Mood Summary Card */}
             {dailyEntryData?.emotion_scores && (
               <div
-                className="rounded-xl border p-6 mb-6 animate-fade-in-up"
+                className="rounded-xl border p-6 animate-fade-in-up"
                 style={{
                   background: 'var(--card-bg)',
                   borderColor: 'var(--border)',
@@ -1015,6 +1128,100 @@ export default function Today() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                 </svg>
               </Link>
+            </div>
+              </div>
+
+              {/* Right Column: Personality Radar Chart */}
+              {dailyEntryData?.emotion_scores && (
+                <div className="lg:flex-1 flex">
+                  <div
+                    className="rounded-xl border p-6 w-full flex flex-col animate-fade-in-up"
+                    style={{
+                      background: 'var(--card-bg)',
+                      borderColor: 'var(--border)',
+                      animationDelay: '0.1s'
+                    }}
+                  >
+                    <div className="mb-5">
+                      <span
+                        className="text-[9px] uppercase tracking-[0.2em] block mb-1"
+                        style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
+                      >
+                        Psychological Model
+                      </span>
+                      <h2
+                        className="text-lg"
+                        style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
+                      >
+                        Personality Profile
+                      </h2>
+                    </div>
+
+                    <div className="flex-1 w-full min-h-[400px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart
+                          data={personalityData}
+                          outerRadius="85%"
+                          style={{
+                            filter: 'drop-shadow(0 8px 32px rgba(32,44,74,0.05))',
+                          }}
+                        >
+                          <defs>
+                            <radialGradient id="radar-fill-today" cx="50%" cy="50%" r="65%">
+                              <stop offset="0%" stopColor="#c7d2fe" stopOpacity="0.32" />
+                              <stop offset="80%" stopColor="#6366f1" stopOpacity="0.15" />
+                              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.07" />
+                            </radialGradient>
+                          </defs>
+                          <PolarGrid
+                            stroke="var(--border)"
+                            strokeWidth={1.25}
+                            radialLines={true}
+                          />
+                          <PolarAngleAxis
+                            dataKey="subject"
+                            tick={{
+                              fontSize: 11,
+                              fill: 'var(--foreground)',
+                              fontWeight: 600,
+                              fontFamily: 'var(--font-sans)',
+                              opacity: 0.84,
+                            }}
+                            tickLine={false}
+                          />
+                          <PolarRadiusAxis
+                            angle={90}
+                            domain={[0, 100]}
+                            tick={{
+                              fontSize: 9,
+                              fill: 'var(--muted)',
+                              fontFamily: 'var(--font-sans)',
+                              fontWeight: 500,
+                              opacity: 0.68,
+                            }}
+                            axisLine={false}
+                            tickCount={5}
+                            tickFormatter={(value) => value === 0 ? '' : `${value}`}
+                            stroke="transparent"
+                            tickMargin={6}
+                          />
+                          <Radar
+                            name="Big Five"
+                            dataKey="A"
+                            stroke="#6366f1"
+                            fill="url(#radar-fill-today)"
+                            fillOpacity={1}
+                            strokeWidth={3}
+                            activeDot={{ fill: "#6366f1", r: 4.5, strokeWidth: 0 }}
+                            dot={{ fill: "#fff", r: 2.5, stroke: '#6366f1', strokeWidth: 1.5, opacity: 0.95 }}
+                            isAnimationActive={true}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
