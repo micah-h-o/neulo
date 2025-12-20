@@ -27,52 +27,233 @@ export default function DashboardLayout({
                 <Protect
                     plan="premium"
                     fallback={
-                        <div className="min-h-screen py-10" style={{ background: 'var(--background)' }}>
-                            <div className="w-full px-6 md:px-16 lg:px-32">
-                                {/* Header */}
-                                <div className="mb-10 animate-fade-in-up">
-                                    <span
-                                        className="text-[10px] uppercase tracking-[0.25em] mb-2 block"
-                                        style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
-                                    >
-                                        Subscription
-                                    </span>
-                                    <h1
-                                        className="text-3xl mb-2"
-                                        style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
-                                    >
-                                        Research Plans
-                                    </h1>
-                                    <p
-                                        className="text-sm leading-relaxed max-w-xl"
-                                        style={{ color: 'var(--muted)' }}
-                                    >
-                                        Choose the level of analysis that fits your self-discovery practice.
-                                        All plans include unlimited journal entries and basic emotional tracking.
-                                    </p>
-                                </div>
+                        <div className="min-h-screen flex flex-col md:flex-row">
+                            {/* Left Side: Dark Background with Branding & Features */}
+                            <div
+                                className="w-full md:w-1/2 md:min-h-screen p-8 md:p-12 lg:p-16 flex flex-col justify-between animate-fade-in-up"
+                                style={{ background: 'var(--foreground)' }}
+                            >
+                                {/* Top: Branding */}
+                                <div>
+                                    <div className="mb-12">
+                                        <span
+                                            className="text-lg tracking-tight"
+                                            style={{ fontFamily: 'var(--font-serif)', color: 'var(--background)' }}
+                                        >
+                                            Neulo
+                                        </span>
+                                        <p
+                                            className="text-[10px] uppercase tracking-[0.2em] mt-1"
+                                            style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.5)' }}
+                                        >
+                                            The AI Journal
+                                        </p>
+                                    </div>
 
-                                {/* Pricing table */}
-                                <div
-                                    className="flex justify-center animate-fade-in-up"
-                                    style={{ animationDelay: '0.1s' }}
-                                >
-                                    <div className="w-full max-w-3xl">
-                                        <PricingTable newSubscriptionRedirectUrl="/me/today"/>
+                                    {/* Hero Text */}
+                                    <div className="mb-12">
+                                        <h1
+                                            className="text-3xl md:text-4xl lg:text-5xl leading-tight mb-6"
+                                            style={{ fontFamily: 'var(--font-serif)', color: 'var(--background)' }}
+                                        >
+                                            Begin your journey of <br />
+                                            <span style={{ color: 'rgba(255,255,255,0.6)', fontStyle: 'italic' }}>
+                                                self-understanding.
+                                            </span>
+                                        </h1>
+                                        <p
+                                            className="text-sm md:text-base leading-relaxed max-w-md"
+                                            style={{ color: 'rgba(255,255,255,0.7)' }}
+                                        >
+                                            Unlock the full potential of AI-powered journaling with advanced insights,
+                                            personality analysis, and weekly reports.
+                                        </p>
+                                    </div>
+
+                                    {/* Features List */}
+                                    <div className="space-y-4">
+                                        {[
+                                            { title: 'Personality Analysis', desc: 'Big Five psychological profiling from your entries' },
+                                            { title: 'Emotional Tracking', desc: 'Real-time mood analysis and pattern detection' },
+                                            { title: 'Weekly Reports', desc: 'Comprehensive insights delivered every week' },
+                                            { title: 'AI Reflections', desc: 'Thoughtful prompts that guide deeper thinking' },
+                                            { title: 'Unlimited Entries', desc: 'Journal as much as you want, whenever you want' },
+                                        ].map((feature, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex items-start gap-4 animate-fade-in-up"
+                                                style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
+                                            >
+                                                <div
+                                                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                                                    style={{ background: 'rgba(255,255,255,0.1)' }}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="#22C55E"
+                                                        className="w-3 h-3"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h3
+                                                        className="text-sm font-medium mb-0.5"
+                                                        style={{ color: 'var(--background)' }}
+                                                    >
+                                                        {feature.title}
+                                                    </h3>
+                                                    <p
+                                                        className="text-xs leading-relaxed"
+                                                        style={{ color: 'rgba(255,255,255,0.5)' }}
+                                                    >
+                                                        {feature.desc}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
-                                {/* Footer note */}
+                                {/* Bottom: Privacy Footer */}
                                 <div
-                                    className="mt-12 text-center animate-fade-in-up"
-                                    style={{ animationDelay: '0.2s' }}
+                                    className="pt-8 border-t animate-fade-in-up"
+                                    style={{ borderColor: 'rgba(255,255,255,0.1)', animationDelay: '0.4s' }}
                                 >
-                                    <p
-                                        className="text-xs"
-                                        style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
-                                    >
-                                        Your data remains encrypted and private regardless of plan.
-                                    </p>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                            style={{ background: 'rgba(255,255,255,0.1)' }}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="var(--background)"
+                                                className="w-4 h-4"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p
+                                                className="text-xs font-medium"
+                                                style={{ color: 'var(--background)' }}
+                                            >
+                                                End-to-end encrypted
+                                            </p>
+                                            <p
+                                                className="text-[10px]"
+                                                style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)' }}
+                                            >
+                                                Your data is protected and never shared
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Side: Light Background with Pricing Table */}
+                            <div
+                                className="hidden md:flex w-1/2 min-h-screen p-8 md:p-12 lg:p-16 flex-col justify-center items-center animate-fade-in-up"
+                                style={{ background: 'var(--background)', animationDelay: '0.1s' }}
+                            >
+                                <div className="w-full max-w-lg">
+                                    {/* Header */}
+                                    <div className="text-center mb-8">
+                                        <span
+                                            className="text-[10px] uppercase tracking-[0.25em] mb-2 block"
+                                            style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
+                                        >
+                                            Choose Your Plan
+                                        </span>
+                                        <h2
+                                            className="text-2xl md:text-3xl mb-2"
+                                            style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
+                                        >
+                                            Research Plans
+                                        </h2>
+                                        <p
+                                            className="text-sm leading-relaxed"
+                                            style={{ color: 'var(--muted)' }}
+                                        >
+                                            Select the level of analysis that fits your self-discovery practice.
+                                        </p>
+                                    </div>
+
+                                    {/* Pricing Table */}
+                                    <div className="w-full">
+                                        {/* Annual Savings Banner */}
+                                        <div
+                                            className="mb-6 p-4 rounded-xl text-center"
+                                            style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)' }}
+                                        >
+                                            <div className="flex items-center justify-center gap-2 mb-1">
+                                                <span
+                                                    className="text-xs font-medium tracking-wide"
+                                                    style={{ color: '#22C55E' }}
+                                                >
+                                                    Save 33% with annual
+                                                </span>
+                                            </div>
+                                            <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                                                <span style={{ fontWeight: 500 }}>$6/mo</span>
+                                                <span style={{ color: 'var(--muted)' }}> billed annually instead of </span>
+                                                <span style={{ color: 'var(--muted)' }}>$9/mo</span>
+                                            </p>
+                                        </div>
+                                        <PricingTable newSubscriptionRedirectUrl="/me/today" />
+                                    </div>
+
+                                    {/* Footer Note */}
+                                    <div className="mt-8 text-center">
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
+                                        >
+                                            Cancel anytime · No commitment required
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Mobile-only Pricing Section (shown below LHS on mobile) */}
+                            <div
+                                className="md:hidden w-full p-8 animate-fade-in-up"
+                                style={{ background: 'var(--background)', animationDelay: '0.2s' }}
+                            >
+                                <div className="w-full max-w-lg mx-auto">
+                                    <div className="text-center mb-6">
+                                        <span
+                                            className="text-[10px] uppercase tracking-[0.25em] mb-2 block"
+                                            style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
+                                        >
+                                            Choose Your Plan
+                                        </span>
+                                        <h2
+                                            className="text-2xl mb-2"
+                                            style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
+                                        >
+                                            Research Plans
+                                        </h2>
+                                    </div>
+                                    <PricingTable newSubscriptionRedirectUrl="/me/today" />
+                                    <div className="mt-6 text-center">
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
+                                        >
+                                            Cancel anytime · No commitment required
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +323,7 @@ export default function DashboardLayout({
                         {/* Right Side: Sign In Form */}
                         <div className="w-full md:w-1/2 flex justify-center md:justify-start animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                             <div className="w-full max-w-md">
-                                <SignIn 
+                                <SignIn
                                     routing="hash"
                                     appearance={{
                                         variables: {

@@ -8,7 +8,7 @@ export default function Home() {
 
       {/* Navigation - Consistent with App UI */}
       <nav className="fixed top-0 left-0 w-full z-50 border-b border-[var(--border)] bg-[var(--surface)]/85 backdrop-blur-lg">
-        <div className="max-w-[1200px] mx-auto h-16 flex items-center justify-between px-3 sm:px-6">
+        <div className="max-w-[1200px] mx-auto h-16 flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2">
             <span className="font-serif text-xl tracking-tight font-medium text-[var(--foreground)] select-none">Neulo</span>
           </div>
@@ -67,8 +67,8 @@ export default function Home() {
         </div>
 
         {/* --- Today Page Preview --- */}
-        <section className="w-full max-w-[1200px] mx-auto pt-8 mt-20">
-          <div className="rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-lg">
+        <section className="w-full max-w-[1200px] mx-auto pt-8 mt-20 h-[500px] sm:h-auto overflow-hidden">
+          <div className="rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-lg origin-top-left transform scale-[0.5] w-[200%] sm:scale-100 sm:w-full sm:transform-none">
             {/* Browser top bar */}
             <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border)] bg-[var(--surface-highlight)]">
               <div className="flex gap-1.5">
@@ -589,49 +589,169 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Card Consistent with App */}
+        {/* Pricing Card */}
         <section className="mt-20 w-full max-w-[1200px] mx-auto pb-20 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-          <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 md:p-10 hover:shadow-lg transition-all duration-500">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-              {/* Left: Pricing & Features */}
-              <div className="flex-1 space-y-6">
+          <div
+            className="rounded-3xl overflow-hidden border border-[var(--border)] hover:shadow-xl transition-all duration-500"
+            style={{ background: 'var(--surface)' }}
+          >
+            <div className="p-8 md:p-12 lg:p-16">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 mb-10">
                 <div>
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="font-serif text-3xl md:text-4xl text-[var(--foreground)]">$9</span>
-                    <span className="text-sm text-[var(--muted)]">per month</span>
-                  </div>
-                  <p className="text-sm text-[var(--muted)] leading-relaxed max-w-md">
-                    Start your journey toward better mental health and self-awareness.
+                  <h2
+                    className="text-3xl md:text-4xl lg:text-5xl mb-4"
+                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
+                  >
+                    Start your journey of{' '}
+                    <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>
+                      self-understanding.
+                    </span>
+                  </h2>
+                  <p
+                    className="text-sm md:text-base leading-relaxed max-w-lg"
+                    style={{ color: 'var(--muted)' }}
+                  >
+                    Unlock the full potential of AI-powered journaling with advanced personality analysis, emotional tracking, and weekly insights.
                   </p>
                 </div>
-                {/* Features List, cohesive with UI */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    "AI-powered personality analysis",
-                    "Emotional pattern tracking",
-                    "Weekly insight reports",
-                    "Private, encrypted storage",
-                    "Reflective AI conversations",
-                    "Unlimited journal entries"
-                  ].map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2.5">
-                      <div className="w-1 h-1 rounded-full bg-[var(--accent)] flex-shrink-0" />
-                      <span className="text-sm text-[var(--foreground)]">{feature}</span>
-                    </div>
-                  ))}
+
+                {/* Price Block */}
+                <div
+                  className="flex-shrink-0 p-6 rounded-2xl text-center md:text-right"
+                  style={{ background: 'var(--surface-highlight)' }}
+                >
+                  <div className="flex items-baseline justify-center md:justify-end gap-1 mb-2">
+                    <span
+                      className="text-xl md:text-5xl"
+                      style={{ color: 'var(--foreground)' }}
+                    >
+                      $9
+                    </span>
+                    <span
+                      className="text-sm"
+                      style={{ color: 'var(--muted)' }}
+                    >
+                      /month
+                    </span>
+                  </div>
+                  <p
+                    className="text-xs mb-2"
+                    style={{ color: 'var(--muted)' }}
+                  >
+                    or <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>$6/mo</span> billed annually
+                  </p>
                 </div>
               </div>
-              {/* Right: CTA Button */}
-              <div className="flex-shrink-0 md:self-center">
+
+              {/* Features Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                {[
+                  { title: 'Personality Analysis', desc: 'Big Five psychological profiling' },
+                  { title: 'Emotional Tracking', desc: 'Real-time mood pattern detection' },
+                  { title: 'Weekly Reports', desc: 'Comprehensive insights delivered' },
+                  { title: 'AI Reflections', desc: 'Thoughtful prompts for depth' },
+                  { title: 'Unlimited Entries', desc: 'Journal as much as you want' },
+                  { title: 'Private & Encrypted', desc: 'Your data is always protected' },
+                ].map((feature, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-3 p-4 rounded-xl transition-colors"
+                    style={{ background: 'var(--surface-highlight)' }}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: 'rgba(34, 197, 94, 0.15)' }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="#22C55E"
+                        className="w-3 h-3"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4
+                        className="text-sm font-medium mb-0.5"
+                        style={{ color: 'var(--foreground)' }}
+                      >
+                        {feature.title}
+                      </h4>
+                      <p
+                        className="text-xs"
+                        style={{ color: 'var(--muted)' }}
+                      >
+                        {feature.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Row */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-[var(--border)]">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ background: 'var(--surface-highlight)' }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="var(--foreground)"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p
+                      className="text-xs font-medium"
+                      style={{ color: 'var(--foreground)' }}
+                    >
+                      End-to-end encrypted
+                    </p>
+                    <p
+                      className="text-[10px] font-mono"
+                      style={{ color: 'var(--muted)' }}
+                    >
+                      Your data is protected and never shared
+                    </p>
+                  </div>
+                </div>
+
                 <SignedOut>
                   <SignUpButton mode="modal">
-                    <button className="w-full md:w-auto bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
-                      Get Started
+                    <button
+                      className="w-full sm:w-auto px-10 py-4 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      style={{
+                        background: 'var(--accent)',
+                        color: 'white'
+                      }}
+                    >
+                      Get Started Today
                     </button>
                   </SignUpButton>
                 </SignedOut>
                 <SignedIn>
-                  <Link href="/me/today" className="block w-full md:w-auto text-center bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
+                  <Link
+                    href="/me/today"
+                    className="block w-full sm:w-auto text-center px-10 py-4 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'white'
+                    }}
+                  >
                     Go to Dashboard
                   </Link>
                 </SignedIn>
