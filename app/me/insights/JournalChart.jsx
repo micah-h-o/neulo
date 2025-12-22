@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import {
@@ -139,21 +139,21 @@ function getNextSunday() {
 function getSundaysInMonth(yearMonth) {
     const [year, month] = yearMonth.split('-').map(Number);
     const sundays = [];
-    
+
     // Start from the first day of the month in UTC
     // Use UTC methods to avoid timezone issues
     const firstDay = new Date(Date.UTC(year, month - 1, 1));
-    
+
     // Find the first Sunday of the month (or before if month starts after Sunday)
     let currentDate = new Date(firstDay);
     const dayOfWeek = currentDate.getUTCDay();
-    
+
     // If the first day is not Sunday, find the first Sunday
     if (dayOfWeek !== 0) {
         const daysUntilSunday = 7 - dayOfWeek;
         currentDate.setUTCDate(1 + daysUntilSunday);
     }
-    
+
     // Collect all Sundays in the month
     while (currentDate.getUTCMonth() === month - 1) {
         const sunday = new Date(Date.UTC(
@@ -165,7 +165,7 @@ function getSundaysInMonth(yearMonth) {
         sundays.push(sunday);
         currentDate.setUTCDate(currentDate.getUTCDate() + 7);
     }
-    
+
     return sundays;
 }
 
@@ -173,7 +173,7 @@ function getSundaysInMonth(yearMonth) {
 function generateMonthOptions() {
     const options = [];
     const now = new Date();
-    
+
     for (let i = 0; i < 12; i++) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const year = date.getFullYear();
@@ -182,110 +182,17 @@ function generateMonthOptions() {
         const label = date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
         options.push({ value, label });
     }
-    
+
     return options;
 }
 
-// Generate a report for a given week
-function generateReportForWeek(weekStart, weekEnd, weekEntries, reportId) {
-    if (weekEntries.length === 0) return null;
-
-    // Calculate average emotions for the week
-    const avgEmotions = {};
-    const emotionKeys = ['happiness', 'stress', 'sadness', 'anxiety', 'excitement', 'calm', 'anger', 'hopefulness'];
-
-    emotionKeys.forEach(emotion => {
-        const sum = weekEntries.reduce((acc, entry) => acc + (entry.emotions?.[emotion] || 0), 0);
-        avgEmotions[emotion] = sum / weekEntries.length;
-    });
-
-    // Find dominant emotion
-    const dominantEmotion = Object.entries(avgEmotions).reduce((a, b) =>
-        avgEmotions[a[0]] > avgEmotions[b[0]] ? a : b
-    )[0];
-
-    // Generate report text
-    const entryCount = weekEntries.length;
-    const dominantValue = avgEmotions[dominantEmotion];
-    const avgIntensity = Object.values(avgEmotions).reduce((a, b) => a + b, 0) / emotionKeys.length;
-
-    // Capitalize first letter of emotion
-    const dominantEmotionFormatted = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
-
-    const reportText = `This week you wrote ${entryCount} ${entryCount === 1 ? 'entry' : 'entries'}. Your emotional landscape was marked by ${dominantEmotionFormatted.toLowerCase()} (${(dominantValue * 100).toFixed(0)}%), with an average emotional intensity of ${(avgIntensity * 100).toFixed(0)}% across all measured dimensions.`;
-
-    return {
-        id: reportId,
-        date: weekEnd,
-        weekStart: weekStart,
-        entryCount: entryCount,
-        report: reportText,
-        avgEmotions: avgEmotions
-    };
-}
-
-// Generate weekly reports for each Sunday
-function generateWeeklyReports(entries) {
-    if (!entries || entries.length === 0) return { current: null, previous: [] };
-
-    const now = new Date();
-    const currentSunday = getCurrentSunday();
-    const currentWeekStart = getWeekStart(currentSunday);
-    const currentWeekEnd = getWeekEnd(currentSunday);
-
-    // Check current week
-    const currentWeekEntries = entries.filter(entry => {
-        const entryDate = new Date(entry.created_at);
-        return entryDate >= currentWeekStart && entryDate <= currentWeekEnd;
-    });
-
-    const currentReport = currentWeekEntries.length > 0
-        ? generateReportForWeek(currentWeekStart, currentWeekEnd, currentWeekEntries, 'current')
-        : null;
-
-    // Get previous reports (excluding current week)
-    const previousReports = [];
-    const twelveWeeksAgo = new Date(now);
-    twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84); // 12 weeks
-
-    let sunday = new Date(currentSunday);
-    sunday.setDate(sunday.getDate() - 7); // Start from previous Sunday
-
-    let index = 0;
-    while (sunday >= twelveWeeksAgo) {
-        const weekStart = getWeekStart(sunday);
-        const weekEnd = getWeekEnd(sunday);
-
-        const weekEntries = entries.filter(entry => {
-            const entryDate = new Date(entry.created_at);
-            return entryDate >= weekStart && entryDate <= weekEnd;
-        });
-
-        if (weekEntries.length > 0) {
-            const report = generateReportForWeek(weekStart, weekEnd, weekEntries, index);
-            if (report) {
-                previousReports.push(report);
-            }
-        }
-
-        sunday.setDate(sunday.getDate() - 7);
-        index++;
-    }
-
-    return {
-        current: currentReport,
-        previous: previousReports.reverse() // Most recent first
-    };
-}
-
 export default function JournalChart({ data, view, effectiveView, onViewChange, needsMoreMessage = null, entries = [], allEntries = [], weeklyReport = null, weeklyReportLoading = false }) {
-    // No reports open by default - REPLACED
     const [isLoading, setIsLoading] = useState(false);
     const [report, setReport] = useState(null);
-    const [error, setError] = useState(null);
-    const [isVisible, setIsVisible] = useState(false);
     const [previousReports, setPreviousReports] = useState([]);
     const [isLoadingReports, setIsLoadingReports] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
+    const [error, setError] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(() => {
         // Default to current month in YYYY-MM format
         const now = new Date();
@@ -293,7 +200,6 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
     });
     const [isDropdownHovered, setIsDropdownHovered] = useState(false);
     const { session } = useSession();
-    const weeklyReports = generateWeeklyReports(entries);
     const big5Data = calculatePersonalityScores(allEntries);
 
     function createClerkSupabaseClient() {
@@ -321,7 +227,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                     .from('weekly_reports')
                     .select('*')
                     .order('week_start', { ascending: false });
-                    // Removed limit to allow filtering by any month
+                // Removed limit to allow filtering by any month
 
                 console.log("Previous Reports:", reports);
 
@@ -346,37 +252,50 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
         };
     }, [session]);
 
-    // Fetch report data
+    const fetchReportPromiseRef = useRef({ sessionId: null, promise: null });
+
     useEffect(() => {
         if (!session) return;
+
         let isMounted = true;
 
-        async function fetchReport() {
-            setIsLoading(true);
-            try {
-                const token = await session.getToken();
-                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (fetchReportPromiseRef.current.sessionId !== session.id) {
+            fetchReportPromiseRef.current.sessionId = session.id;
+            fetchReportPromiseRef.current.promise = (async () => {
+                setIsLoading(true);
+                try {
+                    const token = await session.getToken();
+                    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-weekly-report`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            timezone: userTimezone
-                        })
-                    }
-                );
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-weekly-report`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                timezone: userTimezone
+                            })
+                        }
+                    );
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                // Console log the full weekly report
-                console.log('Full weekly report from generate-weekly-report:', data);
+                    // Console log the full weekly report
+                    console.log('Full weekly report from generate-weekly-report:', data);
+                    return { data };
+                } catch (err) {
+                    console.error('Error fetching report:', err);
+                    return { error: err };
+                }
+            })();
+        }
 
-                if (isMounted) {
+        fetchReportPromiseRef.current.promise.then(({ data, error }) => {
+            if (isMounted) {
+                if (data) {
                     // Update state with the fetched report data regardless of whether it is ready
                     setReport(data);
 
@@ -384,21 +303,14 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                     if (data.error) {
                         setError(data.error);
                     }
+                } else if (error) {
+                    setError(error.message);
+                }
 
-                    setIsLoading(false);
-                    setIsVisible(true);
-                }
-            } catch (err) {
-                console.error('Error fetching report:', err);
-                if (isMounted) {
-                    setError(err.message);
-                    setIsLoading(false);
-                    setIsVisible(true);
-                }
+                setIsLoading(false);
+                setIsVisible(true);
             }
-        }
-
-        fetchReport();
+        });
 
         return () => {
             isMounted = false;
@@ -408,7 +320,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
     // Filter reports based on selected month
     const filteredReports = useMemo(() => {
         if (!selectedMonth || previousReports.length === 0) return [];
-        
+
         // Console log all reports in single line
         const allReportsData = previousReports.map((report, index) => {
             const weekStart = new Date(report.week_start);
@@ -429,17 +341,17 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
             };
         });
         console.log('=== All Reports ===', JSON.stringify({ total: previousReports.length, reports: allReportsData }, null, 0));
-        
+
         const sundaysInMonth = getSundaysInMonth(selectedMonth);
         const filtered = [];
-        
+
         // For each Sunday in the selected month, check if a report exists where created_at falls on that Sunday
         // Account for all timezones: UTC-12 to UTC+14 means a Sunday can appear as Saturday, Sunday, or Monday in UTC
         const sundayChecks = sundaysInMonth.map((sunday, index) => {
             // Sunday is already in UTC from getSundaysInMonth
             const dayName = sunday.toLocaleDateString(undefined, { weekday: 'long' });
             const dateString = sunday.toLocaleDateString();
-            
+
             // Create a 3-day UTC window to account for all timezones
             // Sunday 00:00:00 in UTC+14 = Saturday 10:00:00 UTC
             // Sunday 23:59:59 in UTC-12 = Monday 11:59:59 UTC
@@ -457,17 +369,17 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                 sundayUTC.getUTCDate() + 1, // Monday
                 23, 59, 59, 999
             ));
-            
+
             // Find reports where created_at falls within the timezone-aware window
             const matchingReport = previousReports.find(report => {
                 if (!report.created_at) return false;
-                
+
                 const reportCreatedAt = new Date(report.created_at);
-                
+
                 // Check if created_at falls within our 3-day window
                 return reportCreatedAt >= windowStart && reportCreatedAt <= windowEnd;
             });
-            
+
             const result = {
                 sunday_num: index + 1,
                 day: dayName,
@@ -479,7 +391,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                 search_window_start_UTC: windowStart.toISOString(),
                 search_window_end_UTC: windowEnd.toISOString()
             };
-            
+
             if (matchingReport) {
                 const reportCreatedAt = new Date(matchingReport.created_at);
                 result.status = 'report_found';
@@ -491,7 +403,7 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                 result.report_UTC_date = reportCreatedAt.getUTCDate();
                 result.report_week_start = new Date(matchingReport.week_start).toLocaleDateString();
                 result.report_week_end = new Date(matchingReport.week_end).toLocaleDateString();
-                
+
                 // Only add if not already in the filtered array
                 if (!filtered.find(r => r.id === matchingReport.id)) {
                     filtered.push(matchingReport);
@@ -499,13 +411,13 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
             } else {
                 result.status = 'no_report_found';
             }
-            
+
             return result;
         });
-        
+
         console.log('=== Checking Sundays in Month ===', JSON.stringify({ selected_month: selectedMonth, sundays_count: sundaysInMonth.length, checks: sundayChecks }, null, 0));
         console.log('=== Filtered Results ===', JSON.stringify({ total_filtered: filtered.length }, null, 0));
-        
+
         // Sort by week_start descending (most recent first)
         return filtered.sort((a, b) => {
             const dateA = new Date(a.week_start);
@@ -1033,8 +945,8 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                         {/* Previous Reports Panel */}
                         <div className="rounded-lg border p-4" style={{ borderColor: "var(--border)" }}>
                             <div className="flex items-center justify-between mb-3 sticky top-0" style={{ background: "var(--card-bg)" }}>
-                                <h4 className="text-sm font-semibold" style={{ color: "var(--foreground)", fontFamily: "var(--font-sans)" }}>Previous reports</h4>
-                                <div 
+                                <h4 className="text-sm font-semibold" style={{ color: "var(--foreground)", fontFamily: "var(--font-sans)" }}>All reports</h4>
+                                <div
                                     className="relative inline-block"
                                     onMouseEnter={() => setIsDropdownHovered(true)}
                                     onMouseLeave={() => setIsDropdownHovered(false)}
@@ -1065,12 +977,12 @@ export default function JournalChart({ data, view, effectiveView, onViewChange, 
                                             </option>
                                         ))}
                                     </select>
-                                    <div 
+                                    <div
                                         className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
                                         style={{ color: isDropdownHovered ? "var(--foreground)" : "var(--muted)" }}
                                     >
                                         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
                                 </div>

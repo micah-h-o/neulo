@@ -2,10 +2,8 @@
 import React from "react";
 import Sidebar from "@/components/sidebar";
 import { useEffect } from "react";
-import { SignIn, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { SignIn, SignedIn, SignedOut, useUser, UserButton } from "@clerk/nextjs";
 import { PricingTable } from "@clerk/nextjs";
-
-
 import { Protect } from "@clerk/nextjs";
 
 export default function DashboardLayout({
@@ -163,29 +161,27 @@ export default function DashboardLayout({
 
                             {/* Right Side: Light Background with Pricing Table */}
                             <div
-                                className="hidden md:flex w-1/2 min-h-screen p-8 md:p-12 lg:p-16 flex-col justify-center items-center animate-fade-in-up"
+                                className="hidden md:flex w-1/2 min-h-screen p-8 md:p-12 lg:p-16 flex-col justify-center items-center animate-fade-in-up relative"
                                 style={{ background: 'var(--background)', animationDelay: '0.1s' }}
                             >
+                                {/* Clerk UserButton in top right */}
+                                <div className="absolute top-6 right-6 z-10">
+                                    <UserButton />
+                                </div>
                                 <div className="w-full max-w-lg">
                                     {/* Header */}
                                     <div className="text-center mb-8">
-                                        <span
-                                            className="text-[10px] uppercase tracking-[0.25em] mb-2 block"
-                                            style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
-                                        >
-                                            Choose Your Plan
-                                        </span>
                                         <h2
                                             className="text-2xl md:text-3xl mb-2"
                                             style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
                                         >
-                                            Research Plans
+                                            Pricing
                                         </h2>
                                         <p
                                             className="text-sm leading-relaxed"
                                             style={{ color: 'var(--muted)' }}
                                         >
-                                            Select the level of analysis that fits your self-discovery practice.
+                                            Your mental health is worth it.
                                         </p>
                                     </div>
 
@@ -219,7 +215,7 @@ export default function DashboardLayout({
                                             className="text-xs"
                                             style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}
                                         >
-                                            Cancel anytime · No commitment required
+                                            Cancel anytime, no questions asked.
                                         </p>
                                     </div>
                                 </div>
@@ -231,6 +227,10 @@ export default function DashboardLayout({
                                 style={{ background: 'var(--background)', animationDelay: '0.2s' }}
                             >
                                 <div className="w-full max-w-lg mx-auto">
+                                    {/* Place UserButton above pricing for mobile */}
+                                    <div className="flex justify-end mb-4">
+                                        <UserButton />
+                                    </div>
                                     <div className="text-center mb-6">
                                         <span
                                             className="text-[10px] uppercase tracking-[0.25em] mb-2 block"

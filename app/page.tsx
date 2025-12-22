@@ -1,8 +1,21 @@
+"use client";
+
+import { useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Home() {
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.replace("/me/today");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--accent)] selection:text-white flex flex-col font-sans">
 
@@ -18,16 +31,16 @@ export default function Home() {
                 href="/me/today"
                 className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors hover:underline underline-offset-4"
               >
-                Dashboard
+                Journal
               </Link>
             </SignedIn>
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" forceRedirectUrl="/me/today">
                 <button className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors px-2 py-1 rounded-md hover:bg-[var(--surface-highlight)] active:bg-[var(--surface-highlight)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/me/today">
                 <button className="text-sm font-medium bg-[var(--accent)] text-white px-5 py-2 rounded-full hover:bg-[var(--accent-hover)] transition-all shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
                   Get Started
                 </button>
@@ -46,7 +59,7 @@ export default function Home() {
               <span className="italic text-[var(--muted)] font-normal">journal that reflects back.</span>
             </h1>
             <p className="text-lg text-[var(--muted)] max-w-xl mx-auto leading-relaxed font-light">
-              Improve your mental health, mindset, and cognitive skills with the most advanced AI-powered journal.
+              Improve your mental health, understand your thoughts, and build the mindset you want with the help of an advanced AI journal.
             </p>
           </div>
         </div>
@@ -55,13 +68,13 @@ export default function Home() {
           <SignedOut>
             <SignUpButton mode="modal">
               <button className="bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
-                Start Analyzing
+                Start journaling
               </button>
             </SignUpButton>
           </SignedOut>
           <SignedIn>
             <Link href="/me/today" className="bg-[var(--accent)] text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm hover:shadow-md flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
-              Go to Dashboard
+              Open your journal
             </Link>
           </SignedIn>
         </div>
@@ -541,10 +554,10 @@ export default function Home() {
                 {/* Feature List - Below header */}
                 <div className="space-y-2.5 flex-1">
                   {[
-                    "End-to-end encryption",
-                    "No third-party data sharing",
-                    "SOC 2 compliant infrastructure",
-                    "You own your data, always",
+                    "Your data stays private",
+                    "Encrypted at rest and in transit",
+                    "Zero-knowledge access: only you can view your entries",
+                    "Uses encrypted connections",
                   ].map((feature) => (
                     <div key={feature} className="flex items-center gap-2.5">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22C55E" className="w-4 h-4 flex-shrink-0">
@@ -584,7 +597,7 @@ export default function Home() {
             </div>
             <div className="mt-auto flex-shrink-0" style={{ minHeight: '80px' }}>
               <h3 className="font-serif text-xl mb-1.5 text-[var(--foreground)]">Privacy by Design</h3>
-              <p className="text-sm text-[var(--muted)] leading-relaxed">Your journal is encrypted and never used for training.</p>
+              <p className="text-sm text-[var(--muted)] leading-relaxed">Your journal is encrypted and only for you.</p>
             </div>
           </div>
         </section>
@@ -603,16 +616,16 @@ export default function Home() {
                     className="text-3xl md:text-4xl lg:text-5xl mb-4"
                     style={{ fontFamily: 'var(--font-serif)', color: 'var(--foreground)' }}
                   >
-                    Start your journey of{' '}
-                    <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>
-                      self-understanding.
+                    Your mental health{' '}
+                    <span style={{}}>
+                      is worth it.
                     </span>
                   </h2>
                   <p
                     className="text-sm md:text-base leading-relaxed max-w-lg"
                     style={{ color: 'var(--muted)' }}
                   >
-                    Unlock the full potential of AI-powered journaling with advanced personality analysis, emotional tracking, and weekly insights.
+                    Unlock the full potential of journaling with AI-powered reflection, personality analysis, emotional tracking, and weekly insights.
                   </p>
                 </div>
 
@@ -647,8 +660,8 @@ export default function Home() {
               {/* Features Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                 {[
-                  { title: 'Personality Analysis', desc: 'Big Five psychological profiling' },
-                  { title: 'Emotional Tracking', desc: 'Real-time mood pattern detection' },
+                  { title: 'Personality Analysis', desc: 'Big five psychological profiling' },
+                  { title: 'Emotional Tracking', desc: 'Mood pattern detection' },
                   { title: 'Weekly Reports', desc: 'Comprehensive insights delivered' },
                   { title: 'AI Reflections', desc: 'Thoughtful prompts for depth' },
                   { title: 'Unlimited Entries', desc: 'Journal as much as you want' },
@@ -752,7 +765,7 @@ export default function Home() {
                       color: 'white'
                     }}
                   >
-                    Go to Dashboard
+                    Open your journal
                   </Link>
                 </SignedIn>
               </div>
