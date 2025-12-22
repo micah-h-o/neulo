@@ -12,18 +12,23 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }>) {
     const { user, isLoaded } = useUser();
+    const hasPremium = user && user.publicMetadata?.plan === 'premium';
+    const isAllowedEmail = user && user.primaryEmailAddress?.emailAddress == "micah.hayes.mail@gmail.com"
 
     useEffect(() => {
-        console.log("DashboardLayout rendered");
+        if (!isLoaded) {
+            console.log("DashboardLayout: Auth is loading...");
+            return;
+        }
+        console.log("DashboardLayout rendered. Auth Loaded.");
         console.log("User:", user);
-        console.log("Is Loaded:", isLoaded);
-    }, []);
+    }, [user, isLoaded]);
 
     return (
         <div>
             <SignedIn>
                 <Protect
-                    plan="premium"
+                    condition={() => !!hasPremium || !!isAllowedEmail}
                     fallback={
                         <div className="min-h-screen flex flex-col md:flex-row">
                             {/* Left Side: Dark Background with Branding & Features */}
