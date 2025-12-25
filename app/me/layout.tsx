@@ -13,7 +13,7 @@ export default function DashboardLayout({
 }>) {
     const { user, isLoaded } = useUser();
     const hasPremium = user && user.publicMetadata?.plan === 'premium';
-    const isAllowedEmail = user && user.primaryEmailAddress?.emailAddress == "micah.hayes.mail@gmail.com"
+    const isAllowedEmail = user && user.primaryEmailAddress?.emailAddress == "anneomondi@yahoo.com"
 
     useEffect(() => {
         if (!isLoaded) {
