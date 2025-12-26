@@ -2,7 +2,7 @@
 import React from "react";
 import Sidebar from "@/components/sidebar";
 import { useEffect } from "react";
-import { SignIn, SignedIn, SignedOut, useUser, UserButton } from "@clerk/nextjs";
+import { SignIn, SignedIn, SignedOut, useUser, UserButton, useAuth } from "@clerk/nextjs";
 import { PricingTable } from "@clerk/nextjs";
 import { Protect } from "@clerk/nextjs";
 
@@ -11,17 +11,15 @@ export default function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const { has } = useAuth()
     const { user, isLoaded } = useUser();
-    const hasPremium = user && user.publicMetadata?.plan === 'premium';
+    const hasPremium = has?.({ plan: 'premium' }) ?? false
     const isAllowedEmail = user && user.primaryEmailAddress?.emailAddress == "anneomondi@yahoo.com"
 
     useEffect(() => {
         if (!isLoaded) {
-            console.log("DashboardLayout: Auth is loading...");
             return;
         }
-        console.log("DashboardLayout rendered. Auth Loaded.");
-        console.log("User:", user);
     }, [user, isLoaded]);
 
     return (

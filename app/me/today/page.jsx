@@ -193,7 +193,13 @@ export default function Today() {
   useEffect(() => {
     if (checkingDailyEntry) return;
     if (!hasDailyEntry && editorRef.current) {
-      editorRef.current.focus();
+      // Use setTimeout to ensure the DOM is fully rendered and visible
+      const timer = setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.focus();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [checkingDailyEntry, hasDailyEntry]);
 
@@ -272,7 +278,7 @@ export default function Today() {
       } else {
         setShowButton(false);
       }
-    }, 1200);
+    }, 500);
     setHideTimer(timer);
   };
 
@@ -343,7 +349,7 @@ export default function Today() {
       } else {
         setEditShowButton(false);
       }
-    }, 1200);
+    }, 900);
     setEditHideTimer(timer);
   };
 
@@ -488,8 +494,6 @@ export default function Today() {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 
-      console.log('Starting edit save for entry:', dailyEntryData.id);
-
       // Re-evaluate emotions for the edited content
       const evaluateResponse = await fetch(`${supabaseUrl}/functions/v1/evaluate-journal`, {
         method: 'POST',
@@ -505,7 +509,6 @@ export default function Today() {
 
       if (evaluateResponse.ok) {
         const responseData = await evaluateResponse.json();
-        console.log('Emotion evaluation response:', responseData);
         emotionScores = {
           happiness: responseData.mood.happiness,
           stress: responseData.mood.stress,
@@ -539,25 +542,11 @@ export default function Today() {
         updateData.personality_scores = personalityScores;
       }
 
-      console.log('=== EDIT SAVE DEBUG ===');
-      console.log('Updating entry with data:', updateData);
-      console.log('Entry ID being updated:', dailyEntryData.id);
-      console.log('Entry ID type:', typeof dailyEntryData.id);
-      console.log('Content being saved:', contentToSave);
-      console.log('Content length:', contentToSave.length);
-      console.log('Original content was:', dailyEntryData.name);
-      console.log('Are they different?', contentToSave !== dailyEntryData.name);
-
       const { data, error } = await client
         .from('entries')
         .update(updateData)
         .eq('id', dailyEntryData.id)
         .select('*');
-
-      console.log('=== UPDATE RESPONSE ===');
-      console.log('Error:', error);
-      console.log('Data:', JSON.stringify(data, null, 2));
-      console.log('Rows returned:', data?.length ?? 0);
 
       if (error) {
         console.error('Error updating entry:', error);
@@ -567,9 +556,6 @@ export default function Today() {
       if (!data || data.length === 0) {
         console.error('⚠️ Update returned no data - the row may not exist or RLS is blocking the update.');
         console.error('Try checking: 1) Does entry with ID exist? 2) Do you have update permissions?');
-      } else {
-        console.log('✅ Update confirmed! Returned data:', data[0]);
-        console.log('New name in DB:', data[0].name);
       }
 
       setDailyEntryData(prev => ({
@@ -1226,12 +1212,20 @@ export default function Today() {
           </div>
         ) : (
           <>
+            <style dangerouslySetInnerHTML={{__html: `
+              [data-placeholder]:empty::before {
+                content: attr(data-placeholder);
+                color: var(--muted);
+                pointer-events: none;
+              }
+            `}} />
             <div
               ref={editorRef}
               contentEditable={true}
               suppressContentEditableWarning={true}
               spellCheck={true}
               onInput={handleInput}
+              data-placeholder="Start writing..."
               className="outline-none focus:outline-none px-0 py-0 break-words"
               style={{
                 fontSize: "15px",
