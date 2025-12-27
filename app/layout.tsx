@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import React from "react";
 import { ClerkProvider } from "@clerk/nextjs";
+import { PostHogProvider } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +36,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${inter.variable} ${jetbrainsMono.variable} ${playfair.variable} ${inter.className} antialiased`}>
-          {children}
+          <PostHogProvider>
+            {children}
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>
