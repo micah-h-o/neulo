@@ -14,7 +14,7 @@ export default function DashboardLayout({
     const { has } = useAuth()
     const { user, isLoaded } = useUser();
     const hasPremium = has?.({ plan: 'premium' }) ?? false
-    const isAllowedEmail = user && user.primaryEmailAddress?.emailAddress == "anneomondi@yahoo.com"
+    const isAllowedEmail = user && (user.primaryEmailAddress?.emailAddress == "anneomondi@yahoo.com" || user.primaryEmailAddress?.emailAddress == "micah.hayes.mail@gmail.com")
 
     useEffect(() => {
         if (!isLoaded) {
